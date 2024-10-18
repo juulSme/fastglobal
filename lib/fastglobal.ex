@@ -9,7 +9,7 @@ defmodule FastGlobal do
   @doc """
   Create a module for the FastGlobal instance.
   """
-  @spec new(atom) :: {__MODULE__, atom}
+  @spec new(atom) :: t
   def new(key) do
     {__MODULE__, key_to_module(key)}
   end
@@ -65,6 +65,7 @@ defmodule FastGlobal do
   defp do_delete(module) do
     :code.purge(module)
     :code.delete(module)
+    :ok
   end
 
   @spec key_to_module(atom) :: atom
@@ -75,29 +76,35 @@ defmodule FastGlobal do
 
   @spec compile(atom, any) :: binary
   defp compile(module, value) do
-    {:ok, ^module, binary} = module
+    {:ok, ^module, binary} =
+      module
       |> value_to_abstract(value)
       |> Enum.map(&:erl_syntax.revert/1)
       |> :compile.forms([:verbose, :report_errors])
+
     binary
   end
 
-  @spec value_to_abstract(atom, any) :: [:erl_syntax.syntaxTree]
+  @spec value_to_abstract(atom, any) :: [:erl_syntax.syntaxTree()]
   defp value_to_abstract(module, value) do
     import :erl_syntax
+
     [
       # -module(module).
       attribute(
         atom(:module),
-        [atom(module)]),
+        [atom(module)]
+      ),
       # -export([value/0]).
       attribute(
         atom(:export),
-        [list([arity_qualifier(atom(:value), integer(0))])]),
+        [list([arity_qualifier(atom(:value), integer(0))])]
+      ),
       # value() -> value.
       function(
         atom(:value),
-        [clause([], :none, [abstract(value)])]),
+        [clause([], :none, [abstract(value)])]
+      )
     ]
   end
 end

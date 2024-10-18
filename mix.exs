@@ -6,10 +6,10 @@ defmodule FastGlobal.Mixfile do
       app: :fastglobal,
       version: "1.0.0",
       elixir: "~> 1.3",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
-      package: package(),
+      package: package()
     ]
   end
 
@@ -20,9 +20,7 @@ defmodule FastGlobal.Mixfile do
   end
 
   defp deps do
-    [
-      {:benchfella, "~> 0.3.0", only: :dev}
-    ]
+    []
   end
 
   def package do
@@ -33,8 +31,8 @@ defmodule FastGlobal.Mixfile do
       licenses: ["MIT"],
       files: ["lib/*", "mix.exs", "README*", "LICENSE*"],
       links: %{
-        "GitHub" => "https://github.com/discordapp/fastglobal",
-      },
+        "GitHub" => "https://github.com/juulSme/fastglobal"
+      }
     ]
   end
 end
